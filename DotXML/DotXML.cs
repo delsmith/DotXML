@@ -14,12 +14,13 @@ namespace DotXML
     ///             unless there are multiple instances within a container 
     ///             in which case they are converted to an array of name:value pairs (XArray)
     ///         
-    ///         *attributes are added as a node called 'attr'
+    ///         * attributes are added as name:value pairs to a node called 'attr'
     ///         
-    ///         TODO: elementary values are decoded as long, double, bool, string or null
+    ///         * elementary values are decoded as long, double, bool, string or null
     ///         
     ///     use Item("<node>.<array>[<index>].<item>") to access the named item
     ///         the Item returned can be a XNode, XArray or element
+    ///         
     ///     use Item("<node>.attr.<name>" to access the named attribute
     ///         
     /// </summary>
@@ -42,6 +43,8 @@ namespace DotXML
                 result = lRresult;
             else if (double.TryParse(Value, out double dResult))
                 result = dResult;
+            else if (Value.ToLower() == "null")
+                result = null;
             else if (Value.ToLower() == "true")
                 result = true;
             else if (Value.ToLower() == "false")
