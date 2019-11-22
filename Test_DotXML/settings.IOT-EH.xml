@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<Settings>
+    <Description>
+        <!-- =========================================================================== -->
+        <!--   This file specifies the settings for a session which will                 -->
+        <!--       connect to the Tesla VPP History Cloud repository                     -->
+        <!--       collect a list of files that match the name filter and content filter -->
+        <!--       then download and extract the required time-series data               -->
+        <!--       and record it in OSI-PI                                               -->
+        <!-- =========================================================================== -->
+    </Description>
+    <Logging>
+        <FilePath>..\logs\IoT_EH.log</FilePath>
+        <!-- Valid debug levels are: Error, Warn, Info -->
+        <DebugLevel>Info</DebugLevel>
+    </Logging>
+    <Profile>
+        <profile_folder>profile</profile_folder>
+    </Profile>
+    <PI_Storage>
+        <server>AZSAW0225</server>
+        <collective>
+        </collective>
+        <create_tags>True</create_tags>
+        <compression>False</compression>
+    </PI_Storage>
+    <Filter>
+        <startafter/>
+    </Filter>
+</Settings>

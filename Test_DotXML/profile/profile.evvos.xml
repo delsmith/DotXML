@@ -1,0 +1,25 @@
+<profile>
+    <message id="msg_id">
+        <type>default</type>
+        <pointsource>IOT_TEST_DATA</pointsource>
+        <tag_pattern>//{server}/IOT.{device}.{point}.result</tag_pattern>
+        <time_style>unix</time_style>
+        <interval>-10m</interval>
+        <!-- or -->
+        <interval>//{server}/IOT.{device}.interval</interval>
+        <point>
+            <name>data</name>
+            <alias>windspeed</alias>
+            <c0>15</c0>
+            <c1>0.6218</c1>
+        </point>
+        <point>
+            <name>data1.RESULT_001</name>
+            <alias>direction</alias>
+        </point>
+        <point>
+            <name>data1.RESULT_002</name>
+            <alias>degrees</alias>
+        </point>
+    </message>
+</profile>

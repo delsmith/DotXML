@@ -36,6 +36,13 @@
     <StartupObject>Test_DotXML.Test_DotXML</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Json_Decoder">
+      <HintPath>..\..\Json_Decoder\bin\Release\Json_Decoder.dll</HintPath>
+    </Reference>
+    <Reference Include="OSIsoft.AFSDK, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6238be57836698e6, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\PIPC\AF\PublicAssemblies\4.0\OSIsoft.AFSDK.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,6 +53,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IoT_Profile.cs" />
+    <Compile Include="PI_Uploader.cs" />
     <Compile Include="Test_DotXML.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

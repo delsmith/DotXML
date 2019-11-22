@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
-using DotXML;
+using Json_Decoder;
+using DotXMLLib;
+using EventHubReceiver;
 
 namespace Test_DotXML
 {
@@ -8,19 +10,18 @@ namespace Test_DotXML
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Testing XML dot-notation parser");
-            string sample = "example.xml";
-            DotXML.DotXML doc = new DotXML.DotXML();
-            doc.LoadXml(File.ReadAllText(sample));
+            Console.WriteLine("Testing IOT EventHub Data extraction profile");
 
-            var root = doc.body;
-            var v = root.Item("profile");
-            v = root.Item("profile.message");
-            v = root.Item("profile.message.type");
-            v = root.Item("profile.message.conversion");
-            v = root.Item("profile.message.conversion.point");
-            v = root.Item("profile.message.conversion.point[1].name");
-            v = root.Item("profile.message.conversion.point.name");
+            // load the application settings
+            string settingsFileName = "settings.IOT-EH.xml";
+            dynamic settings = null;
+            try { settings = (new DotXML(settingsFileName)).Item("Settings"); }
+            catch (Exception e) { Console.WriteLine($"missing settings file\n{e.Message}"); }
+
+            // load test data and unpack it
+            string dataFile = "iot_test.json";
+            dynamic msg = Json.Load(dataFile);
+            PI_Extractor.PI_UploadTest(settings, msg);
         }
     }
 }

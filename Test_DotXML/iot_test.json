@@ -1,0 +1,21 @@
+{
+    "source": "sigfox",
+    "device_type": "evvos",
+    "device": "3F7DFE",
+    "lqi": "Good",
+    "time": 1572842592,
+    "seqNumber": 2133,
+    "data": "4.0000000000000000201e3",
+    "data1": {
+        "RESULT_001": "W",
+        "RESULT_002": 270,
+        "COUNTER": 0,
+        "SETTLING_TIME": 200,
+        "FIRMWARE": 1,
+        "VOLTS": 3.632,
+        "TRANSMISSION_RATE": 3,
+        "DEVICE_TYPE": 2,
+        "RESOLUTION": 0,
+        "COUNTING_MODE": 1
+    }
+}
