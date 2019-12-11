@@ -19,7 +19,7 @@ namespace Test_DotXML
             catch (Exception e) { Console.WriteLine($"missing settings file\n{e.Message}"); }
 
             // load test data and unpack it
-            string dataFile = "iot_test.json";
+            string dataFile = args[0]; // "iot_test.json";
             dynamic msg = Json.Load(dataFile);
             PI_Extractor.PI_UploadTest(settings, msg);
         }

@@ -28,7 +28,7 @@ namespace EventHubReceiver
         {
             switch (style) {
                 case "unix":
-                    long lTime = (long.TryParse(time, out lTime)) ? lTime : 0;
+                    long lTime = long.TryParse(time, out lTime) ? lTime : double.TryParse(time, out double dTime) ? (long)dTime : 0;
                     return unix0time.AddSeconds(lTime);
                 default:
                     return DateTime.Parse(time);
@@ -49,7 +49,7 @@ namespace EventHubReceiver
 
             string source = msg.Item("source");
             string device_type = msg.Item("device_type");
-            string msg_type = msg.Item("msg_type", "default");
+            string msg_type = msg.Item("message_type", "default");
             string device = msg.Item("device");
 
             // load the 'profile' to extract details from a message
@@ -67,6 +67,11 @@ namespace EventHubReceiver
                 return;
             }
 
+            string pointsource = msg_profile.Item("pointsource");
+            string tag_pattern = msg_profile.Item("tag_pattern");
+            string time_style = msg_profile.Item("message.time_style","unix");
+            var time = msg.Item("time");
+            DateTime sampleTime = ConvertTime( $"{time}", time_style );
             Dictionary<string,DotXML.XNode> pt_info = IoT_Profile.Point_Info(msg_profile);
             if(pt_info == null)
             {
@@ -74,13 +79,7 @@ namespace EventHubReceiver
                 return;
             }
 
-            string time_style = msg_profile.Item("message.time_style","unix");
-            var time = msg.Item("time");
-            DateTime sampleTime = ConvertTime( $"{time}", time_style );
-
-            string tag_pattern = msg_profile.Item("tag_pattern");
-
-            /*  extract points from message and create transactions to update tags
+            /*  extract scalar points from message and create transactions to update tags
              *  for each member of pt_info, 
              *      fetch the new value, 
              *      if present
@@ -91,122 +90,140 @@ namespace EventHubReceiver
              */
             foreach(dynamic point in pt_info.Values)
             {
-                string field_name = point.Item("name");
+                // build the tag name
+                string field_name = point.Item("item");
                 string alias = point.Item("alias");
+                string tag = tag_pattern
+                    .Replace("{source}", source)
+                    .Replace("{device_type}", device_type)
+                    .Replace("{device}", device)
+                    .Replace("{point}", alias ?? field_name);
+                tag = tag.ToUpper();
                 var Value = msg.Item(field_name);
-                if (Value != null)
+                //UploadPoint(point, Value, tag, pointsource, sampleTime);
+                Console.WriteLine($"{sampleTime}  {tag,-56}   {Value}");
+            }
+
+            // if expecting a data vector, unpack it (e.g. WaterWatch)
+            dynamic series_spec = msg_profile.Item("series");
+            string series_name = series_spec?.Item("name");
+            dynamic samples = msg.Item(series_name);
+            if( samples?.GetType().Name == "JArray")
+            {
+                foreach (dynamic sample in samples)
                 {
-                    // TODO: apply scaling
-                    // TODO: build the tag name
-                    string tag = tag_pattern.Replace("{server}",$"{server_name}").Replace("{device}",$"{device}");
-                    tag = tag.Replace("{point}", alias ?? field_name);
-                    Console.WriteLine($"Tag: {tag}, Time: {sampleTime}, Value: {Value}");
+                    time = sample.Item("time");
+                    sampleTime = ConvertTime($"{time}", time_style);
+                    foreach ( dynamic point in series_spec.Item("point"))
+                    {
+                        string field_name = point.Item("item");
+                        string alias = point.Item("alias");
+                        string tag = tag_pattern
+                            .Replace("{source}", source)
+                            .Replace("{device_type}", device_type)
+                            .Replace("{device}", device)
+                            .Replace("{point}", alias ?? field_name);
+                        tag = tag.ToUpper();
+                        var Value = sample.Item(field_name);
+                        //UploadPoint(point, Value, tag, pointsource, sampleTime);
+                        Console.WriteLine($"{sampleTime}  {tag,-56}   {Value}");
+                    }
                 }
             }
 
-            //// the other details may be device-dependent
-            //switch (device_type)
-            //{
-            //    case "site_sentinel":
-            //        long seqNumber = msg.Item("seqNumber");
-            //        string lqi = msg.Item("lqi");
-            //        double latitude = msg.Item("lat");
-            //        double longitude = msg.Item("long");
-            //        long result_001 = msg.Item("data.RESULT_001");
-            //        long result_002 = msg.Item("data.RESULT_002");
-            //        long modbus = msg.Item("data.MODBUS");
-            //        long counter = msg.Item("data.COUNTER");
-            //        long input_001 = msg.Item("data.INPUT_001");
-            //        long input_002 = msg.Item("data.INPUT_002");
-            //        long scan_timed = msg.Item("data.SCAN_TIMED");
-            //        long scan_fast = msg.Item("data.SCAN_FAST");
-            //        double volts = msg.Item("data.VOLTS");
-            //        break;
-            //    default:
-            //        break;
-            //}
-
-            #region exclude
-            // build a lookup table of tags for this site, indexed by signal name
-            //IEnumerable<PIPoint> piPoints = PIPoint.FindPIPoints(server, $"{prefix}*", null, null);
-            //Dictionary<string, PIPoint> sigList = new Dictionary<string, PIPoint> { };
-            //foreach (var p in piPoints) sigList[p.Name.Substring(prefix.Length + 1)] = p;
-
-            //// get the list of required signal names
-            //List<string> signals = settings.Values("signals");
-
-            //// create a lookup table, indexed by signal name, to contain value series
-            //Dictionary<string, AFValues> values = new Dictionary<string, AFValues> { };
-
-            //// process time-stamped list of records containing signal values
-            //for (int n = 0; n < data.Count; n++)
-            //{
-            //    // decode the timestamp
-            //    var rec = (JDict)data[n];
-            //    var timestamp = DateTime.Parse((string)rec["timestampUtc"], null, DateTimeStyles.AssumeUniversal);
-
-            //    // add measurements to the corresponding series
-            //    foreach (string key in rec.Keys)
-            //    {
-            //        // translate the 'key' to a 'signal' ID
-            //        string signal = key.ToLower();
-            //        if (key.IndexOf('_') >= 0) signal = signal.Substring(0, key.IndexOf('_'));
-            //        foreach (string pSig in sigList.Keys) { if (signal == pSig.ToLower().Replace("_", "")) { signal = pSig; break; } }
-
-            //        // exclude signals that are: 'null'; not in the specified list; not defined as a PI Point
-            //        if (rec[key] == null || !(signals.Count == 0 || signals.Contains("*") || signals.Contains(signal)) || !sigList.ContainsKey(signal))
-            //            continue;
-
-            //        PIPoint p = sigList[signal];
-            //        AFValue value;
-            //        // if first value for this signal, create a 'series'
-            //        if (!values.ContainsKey(signal))
-            //            values[signal] = new AFValues();
-            //        // add this measurement to the time series
-            //        switch (p.PointType)
-            //        {
-            //            case PIPointType.Float16:
-            //            case PIPointType.Float32:
-            //            case PIPointType.Float64:
-            //                value = new AFValue((double)rec[key]);
-            //                break;
-            //            case PIPointType.Digital:
-            //                value = new AFValue((int)rec[key]);
-            //                break;
-            //            case PIPointType.Int16:
-            //            case PIPointType.Int32:
-            //                value = new AFValue((int)rec[key]);
-            //                break;
-            //            case PIPointType.String:
-            //            default:
-            //                value = new AFValue((string)rec[key]);
-            //                break;
-            //        }
-            //        try
-            //        {
-            //            value.Timestamp = (AFTime)timestamp;
-            //            values[signal].Add(value);
-            //        }
-            //        catch (Exception e) { Console.WriteLine(e.Message); }
-            //    }
-            //}
-
-            //// All records scanned, upload the data
-            //foreach (string signal in values.Keys)
-            //{
-            //    OutQueue.Enqueue(new PI_Update(sigList[signal], values[signal]));
-            //}
-            //// Throttle back if Upload queue gets too long
-            //if (OutQueue.Count > 350)
-            //{
-            //    if (!limited)
-            //        Console.WriteLine($"Uploader queue limit reached");
-            //    limited = true;
-            //    Thread.Sleep(350);
-            //}
-            #endregion
-
         } // end PI_Upload()
+
+        //internal static void UploadPoint(dynamic point, dynamic Value, string tag, string pointsource, DateTime sampleTime)
+        //{
+        //    if (Value != null)
+        //    {
+
+        //        PIPoint p = null;
+        //        try
+        //        {
+        //            p = PIPoint.FindPIPoint(server, tag);
+        //        }
+        //        catch (PIException e)
+        //        {
+        //            try
+        //            {
+        //                p = CreatePIPoint(server, pointsource, tag, point);
+        //            }
+        //            catch
+        //            {
+        //                Console.WriteLine($"Find/Create PI Point exception\n{e.Message}");
+        //                return;
+        //            }
+        //        }
+
+        //        AFValue value;
+        //        try
+        //        {
+        //            switch (p.PointType)
+        //            {
+        //                case PIPointType.Float16:
+        //                case PIPointType.Float32:
+        //                case PIPointType.Float64:
+        //                    value = new AFValue((double)Value);
+        //                    break;
+        //                case PIPointType.Int16:
+        //                case PIPointType.Int32:
+        //                    value = new AFValue((int)Value);
+        //                    break;
+        //                case PIPointType.Digital:
+        //                case PIPointType.String:
+        //                default:
+        //                    value = new AFValue(Value.ToString());
+        //                    break;
+        //            }
+        //            value.Timestamp = (AFTime)sampleTime;
+        //        }
+        //        catch (PIException e)
+        //        {
+        //            Console.WriteLine($"Conversion exception\n{e.Message}");
+        //            return;
+        //        }
+
+        //        try
+        //        {
+        //            Console.WriteLine($"Tag: {tag:S32}, Time: {sampleTime}, Value: {Value}");
+        //            p.UpdateValue(value, updateOption, bufferOption);
+        //        }
+        //        catch (PIException e)
+        //        {
+        //            Console.WriteLine($"PI Point Update exception\n{e.Message}");
+        //            return;
+        //        }
+        //        finally { }
+        //    }
+        //}
+
+        internal static PIPoint CreatePIPoint(PIServer server, string pointsource, string tag, DotXML.XNode pointSpec)
+        {
+            Dictionary<string, Object> attributes = new Dictionary<string, object> { };
+            string pointtype = pointSpec.Item("type") ?? "Float32";
+            attributes.Add("pointtype", pointtype);
+            attributes.Add("engunits", pointSpec.Item("engunits") ?? "");
+            attributes.Add("pointsource", pointsource ?? "");
+            attributes.Add("descriptor", tag.Replace('.',' ').Replace('_',' '));
+            attributes.Add("excdev", 0);
+            attributes.Add("compdev", 0);
+            attributes.Add("shutdown", 0);
+            attributes.Add("location5", 1);
+            if( pointtype.ToLower() == "digital")
+                attributes.Add("digitalset", pointSpec.Item("digitalset") ?? "");
+            try
+            {
+                PIPoint p = server.CreatePIPoint(tag, attributes);
+                Console.WriteLine($"Point {p.Name} created");
+                return p;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"PIPoint Creation failed\n{e.Message}");
+                return null;
+            }
+        }
 
         internal class PI_Update
         {
