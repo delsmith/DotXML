@@ -1,0 +1,2 @@
+{"source":"sigfox","device_type":"ew_eco_analog","device":"3EF9EA","time":1575838286,"seqNumber":2108,"lqi":"Good","lat":0.0,"long":0.0,"message_type":"data","data":{"RESULT":-25,"VOLTS":3.58}}
+{"source":"sigfox","device_type":"ew_eco_analog","device":"3EC244","time":1575838287,"seqNumber":162,"lqi":"Good","lat":0.0,"long":0.0,"message_type":"data","data":{"RESULT":-25,"VOLTS":3.6550000000000002}}

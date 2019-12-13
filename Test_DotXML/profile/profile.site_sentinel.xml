@@ -1,5 +1,5 @@
 <profile>
-    <message>
+    <message id="msg_id">
         <type>default</type>
         <pointsource>SIGFOX</pointsource>
         <tag_pattern>{source}-IOT.AGL.{device_type}.{device}.{point}</tag_pattern>
@@ -14,25 +14,19 @@
             <item>data.RESULT_001</item>
             <alias>RESULT.001</alias>
             <type>Float32</type>
-            <engunits>mV/uA</engunits>
+            <engunits>raw</engunits>
         </point>
         <point>
             <item>data.RESULT_002</item>
             <alias>RESULT.002</alias>
             <type>Float32</type>
-            <engunits>mV/uA</engunits>
+            <engunits>raw</engunits>
         </point>
         <point>
-            <item>data.COUNTER</item>
-            <alias>COUNTER</alias>
+            <item>data.MODBUS</item>
+            <alias>MODBUS</alias>
             <type>Float32</type>
-            <engunits>count</engunits>
-        </point>
-        <point>
-            <item>data.SETTLING_TIME</item>
-            <alias>SETTLING.TIME</alias>
-            <type>Float32</type>
-            <engunits>ms</engunits>
+            <engunits>raw</engunits>
         </point>
         <point>
             <item>data.VOLTS</item>
@@ -41,37 +35,37 @@
             <engunits>V</engunits>
         </point>
         <point>
-            <item>data.FIRMWARE</item>
-            <alias>FIRMWARE</alias>
-            <type>Int32</type>
-            <engunits>version</engunits>
+            <item>data.COUNTER</item>
+            <alias>COUNTER</alias>
+            <type>Float32</type>
+            <engunits>count</engunits>
         </point>
         <point>
-            <item>data.TRANSMISSION_RATE</item>
-            <alias>TRANSMISSION.RATE</alias>
+            <item>data.SCAN_TIMED</item>
+            <alias>SCAN.TIMED</alias>
             <type>digital</type>
-            <digitalset>SIGFOX_EVVOS_TransmissionRate</digitalset>
+            <digitalset>OffOn</digitalset>
         </point>
         <point>
-            <item>data.DEVICE_TYPE</item>
-            <alias>DEVICE.TYPE</alias>
+            <item>data.SCAN_FAST</item>
+            <alias>SCAN.FAST</alias>
             <type>digital</type>
-            <digitalset>SIGFOX_EVVOS_DeviceType</digitalset>
+            <digitalset>OffOn</digitalset>
         </point>
         <point>
-            <item>data.RESOLUTION</item>
-            <alias>RESOLUTION</alias>
+            <item>data.INPUT_001</item>
+            <alias>INPUT.001</alias>
             <type>digital</type>
-            <digitalset>SIGFOX_EVVOS_AnalogResolution</digitalset>
+            <digitalset>OffOn</digitalset>
         </point>
         <point>
-            <item>data.COUNTING_MODE</item>
-            <alias>COUNTING.MODE</alias>
+            <item>data.INPUT_002</item>
+            <alias>INPUT.002</alias>
             <type>digital</type>
-            <digitalset>SIGFOX_EVVOS_CountingMode</digitalset>
+            <digitalset>OffOn</digitalset>
         </point>
     </message>
-    <message>
+    <message id="msg_id">
         <type>data</type>
         <pointsource>SIGFOX</pointsource>
         <tag_pattern>{source}-IOT.AGL.{device_type}.{device}.{point}</tag_pattern>
@@ -86,25 +80,19 @@
             <item>data.RESULT_001</item>
             <alias>RESULT.001</alias>
             <type>Float32</type>
-            <engunits>mV/uA</engunits>
+            <engunits>raw</engunits>
         </point>
         <point>
             <item>data.RESULT_002</item>
             <alias>RESULT.002</alias>
             <type>Float32</type>
-            <engunits>mV/uA</engunits>
+            <engunits>raw</engunits>
         </point>
         <point>
-            <item>data.COUNTER</item>
-            <alias>COUNTER</alias>
+            <item>data.MODBUS</item>
+            <alias>MODBUS</alias>
             <type>Float32</type>
-            <engunits>count</engunits>
-        </point>
-        <point>
-            <item>data.SETTLING_TIME</item>
-            <alias>SETTLING.TIME</alias>
-            <type>Float32</type>
-            <engunits>ms</engunits>
+            <engunits>raw</engunits>
         </point>
         <point>
             <item>data.VOLTS</item>
@@ -113,34 +101,34 @@
             <engunits>V</engunits>
         </point>
         <point>
-            <item>data.FIRMWARE</item>
-            <alias>FIRMWARE</alias>
-            <type>Int32</type>
-            <engunits>version</engunits>
+            <item>data.COUNTER</item>
+            <alias>COUNTER</alias>
+            <type>Float32</type>
+            <engunits>count</engunits>
         </point>
         <point>
-            <item>data.TRANSMISSION_RATE</item>
-            <alias>TRANSMISSION.RATE</alias>
+            <item>data.SCAN_TIMED</item>
+            <alias>SCAN.TIMED</alias>
             <type>digital</type>
-            <digitalset>SIGFOX_EVVOS_TransmissionRate</digitalset>
+            <digitalset>OffOn</digitalset>
         </point>
         <point>
-            <item>data.DEVICE_TYPE</item>
-            <alias>DEVICE.TYPE</alias>
+            <item>data.SCAN_FAST</item>
+            <alias>SCAN.FAST</alias>
             <type>digital</type>
-            <digitalset>SIGFOX_EVVOS_DeviceType</digitalset>
+            <digitalset>OffOn</digitalset>
         </point>
         <point>
-            <item>data.RESOLUTION</item>
-            <alias>RESOLUTION</alias>
+            <item>data.INPUT_001</item>
+            <alias>INPUT.001</alias>
             <type>digital</type>
-            <digitalset>SIGFOX_EVVOS_AnalogResolution</digitalset>
+            <digitalset>OffOn</digitalset>
         </point>
         <point>
-            <item>data.COUNTING_MODE</item>
-            <alias>COUNTING.MODE</alias>
+            <item>data.INPUT_002</item>
+            <alias>INPUT.002</alias>
             <type>digital</type>
-            <digitalset>SIGFOX_EVVOS_CountingMode</digitalset>
+            <digitalset>OffOn</digitalset>
         </point>
     </message>
 </profile>

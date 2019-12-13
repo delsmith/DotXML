@@ -44,6 +44,10 @@ namespace EventHubReceiver
 
         public static void PI_Upload( PIServer server, dynamic msg )
         {
+            // skip empty message
+            if (msg == null)
+                return;
+
             // fetch the device details
             string server_name = server != null ? server.Name : "AZSAW0225";
 
@@ -57,6 +61,7 @@ namespace EventHubReceiver
             if(profile == null)
             {
                 // log error
+                Console.WriteLine($"No profile for device type '{device_type}'");
                 return;
             }
 
@@ -64,6 +69,7 @@ namespace EventHubReceiver
             if(msg_profile == null)
             {
                 // log error
+                Console.WriteLine($"No profile for message type '{msg_type}'");
                 return;
             }
 
@@ -106,7 +112,7 @@ namespace EventHubReceiver
 
             // if expecting a data vector, unpack it (e.g. WaterWatch)
             dynamic series_spec = msg_profile.Item("series");
-            string series_name = series_spec?.Item("name");
+            string series_name = series_spec?.Item("name") ?? "";
             dynamic samples = msg.Item(series_name);
             if( samples?.GetType().Name == "JArray")
             {
