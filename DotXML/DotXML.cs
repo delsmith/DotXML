@@ -5,6 +5,7 @@ using System.Xml;
 using System.IO;
 
 namespace DotXMLLib
+
 {
     /// <summary>
     /// Wrapper for XmlDocument class to support dot-notation reference
