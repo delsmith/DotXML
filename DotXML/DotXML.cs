@@ -167,7 +167,6 @@ namespace DotXMLLib
             }
             internal static int parse_index(string input)
             {
-                // pattern to extract what is between '[' and ']' that is not '[' or ']'
                 string pattern = @"\[([^\[\]]+)\]";
                 var content = Regex.Match(input, pattern).Groups[1].Value;
                 return (int.TryParse(content, out int index)) ? index : -1;
