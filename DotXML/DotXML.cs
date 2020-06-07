@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Xml;
-using System.IO;
 
-namespace DotXMLLib
-
+namespace DotXML
 {
     /// <summary>
     /// Wrapper for XmlDocument class to support dot-notation reference
@@ -29,14 +27,6 @@ namespace DotXMLLib
     public class DotXML : XmlDocument
     {
         public XNode body;
-
-        public DotXML(string filename) { LoadXml(File.ReadAllText(filename)); }
-
-        public DotXML()
-        {
-            body = null;
-        }
-
         public override void LoadXml(string xml)
         {
             base.LoadXml(xml);
@@ -48,18 +38,18 @@ namespace DotXMLLib
         // convert elementary value to primary Type
         internal static dynamic Element( string Value)
         {
-            if (long.TryParse(Value, out long lRresult))
-                return lRresult;
+            dynamic result = Value;
+            if( long.TryParse(Value, out long lRresult) )
+                result = lRresult;
             else if (double.TryParse(Value, out double dResult))
-                return dResult;
-            else if (Value == null || Value.ToLower() == "null")
-                return null;
+                result = dResult;
+            else if (Value.ToLower() == "null")
+                result = null;
             else if (Value.ToLower() == "true")
-                return true;
+                result = true;
             else if (Value.ToLower() == "false")
-                return false;
-            else
-                return Value;
+                result = false;
+            return result;
         }
 
         // construct an object 'tree' of the XML document elements
@@ -116,9 +106,6 @@ namespace DotXMLLib
         #endregion
 
         #region dot-notation access methods
-        public dynamic Item(string tag) => body.Item(tag);
-        public dynamic Item(string tag, dynamic dflt) => body.Item(tag) ?? dflt;
-
         public class XList : List<dynamic>
         {
             public dynamic Item(int index) => (index >= 0 && index < Count) ? this[index] : null;
@@ -127,11 +114,7 @@ namespace DotXMLLib
 
         public class XNode : Dictionary<string, dynamic>
         {
-            public dynamic Item(string key, string dflt) => Item(key) ?? dflt;
-            public dynamic Item(string key, dynamic dflt) => Item(key) ?? dflt;
-
             public dynamic Item(int index) => null;     // invalid reference
-            // this method is recursive
             public dynamic Item(string key)
             {
                 if (key.IndexOf('.') < 0)
@@ -159,7 +142,7 @@ namespace DotXMLLib
                 }
                 else
                 {
-                    // extract node name and key (return 'null' if undefined)
+                    // extract node name and key 
                     string[] nodes = key.Split(".".ToCharArray(), 2);
                     dynamic element = this.Item(nodes[0]);
                     return element?.Item(nodes[1]);
