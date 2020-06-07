@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace EventHubReceiver
 {
-    public class IoT_Profile : DotXML 
+    public class IoT_Profile: DotXML 
     {
-        public IoT_Profile(string filename) => LoadXml(xml: File.ReadAllText(filename));
+        public IoT_Profile(string filename) { base.LoadXml(File.ReadAllText(filename)); }
 
         internal static List<string> unsupported = new List<string>();
         internal static Dictionary<string, dynamic> profiles = new Dictionary<string, dynamic>();
@@ -24,7 +24,7 @@ namespace EventHubReceiver
                 return null;
 
             string folder = PI_Extractor.settings.Item("Profile.profile_folder");
-            if ( ! string.IsNullOrEmpty(folder) )
+            if (folder != "")
             {
                 string profile_name = $"{folder}\\profile.{name}.xml";
                 if (File.Exists(profile_name))
@@ -44,9 +44,16 @@ namespace EventHubReceiver
         public static dynamic Msg_Profile(XNode profile, string type)
         {
             // there may be one message profile or a List
-            dynamic message = profile?.Item("message");
-            
-            if(message.GetType().Name == "XList")
+            dynamic message = profile.Item("message");
+
+            if(message.GetType().Name == "XNode")
+            {
+                if (message.Item("type") == type)
+                    return message;
+                else
+                    return null;
+            }
+            else
             {
                 // List (return matching type or 'null')
                 foreach( dynamic msg in message)
@@ -56,31 +63,22 @@ namespace EventHubReceiver
                 }
                 return null;
             }
-            else
-            {
-                if (message.Item("type") == type)
-                    return message;
-                else
-                    return null;
-            }
         }
 
         public static Dictionary<string,XNode> Point_Info(XNode msg)
         {
             Dictionary<string, XNode> result = new Dictionary<string, XNode> { };
 
-            dynamic point = msg?.Item("point");
-
-            if (point.GetType().Name == "XList")
+            dynamic point = msg.Item("point");
+            if (point.GetType().Name == "XNode")
             {
+                result[point.Item("name")] = point;
+            }
+            else {
                 foreach (dynamic pt in point)
                 {
-                    result[pt.Item("item")] = pt;
+                    result[pt.Item("name")] = pt;
                 }
-            }
-            else // XNode: only one point defined
-            {
-                result[point.Item("item")] = point;
             }
             return result;
         }
