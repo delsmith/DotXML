@@ -116,7 +116,6 @@ namespace DotXMLLib
 
         #region dot-notation access methods
         public dynamic Item(string tag) => body.Item(tag);
-        public dynamic Item(string tag, string dflt) => body.Item(tag) ?? dflt;
         public dynamic Item(string tag, dynamic dflt) => body.Item(tag) ?? dflt;
 
         public class XList : List<dynamic>
