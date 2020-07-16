@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.IO;
 
-namespace DotXML
+namespace DotXMLLib
 {
     /// <summary>
     /// Wrapper for XmlDocument class to support dot-notation reference

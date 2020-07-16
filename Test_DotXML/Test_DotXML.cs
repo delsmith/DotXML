@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using DotXML;
+using DotXMLLib;
 
 namespace Test_DotXML
 {
@@ -10,7 +10,7 @@ namespace Test_DotXML
         {
             Console.WriteLine("Testing XML dot-notation parser");
             string sample = "example.xml";
-            DotXML.DotXML doc = new DotXML.DotXML();
+            DotXMLLib.DotXML doc = new DotXMLLib.DotXML();
             doc.LoadXml(File.ReadAllText(sample));
 
             var root = doc.body;
